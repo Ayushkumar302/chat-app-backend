@@ -29,7 +29,7 @@ module.exports.login = async (req, res, next) => {
     delete userObj.password;
     
     const token = generateToken(user._id);
-    return res.cookie("token", token, cookieOptions).json({ status: true, user: userObj });
+    return res.cookie("token", token, cookieOptions).json({ status: true, user: userObj, token });
   } catch (ex) {
     next(ex);
   }
@@ -55,7 +55,7 @@ module.exports.register = async (req, res, next) => {
     delete userObj.password;
     
     const token = generateToken(user._id);
-    return res.cookie("token", token, cookieOptions).json({ status: true, user: userObj });
+    return res.cookie("token", token, cookieOptions).json({ status: true, user: userObj, token });
   } catch (ex) {
     next(ex);
   }
