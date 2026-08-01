@@ -10,8 +10,8 @@ const generateToken = (id) => {
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  secure: true,
+  sameSite: "none",
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 
@@ -100,7 +100,7 @@ module.exports.logOut = (req, res, next) => {
   try {
     if (!req.params.id) return res.json({ msg: "User id is required " });
     onlineUsers.delete(req.params.id);
-    return res.status(200).clearCookie("token").send();
+    return res.status(200).clearCookie("token", cookieOptions).send();
   } catch (ex) {
     next(ex);
   }

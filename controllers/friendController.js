@@ -90,9 +90,9 @@ module.exports.getFriends = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).populate(
       "friends",
-      "username email avatarImage _id"
+      "username email avatarImage isAvatarImageSet _id"
     );
-    return res.json(user.friends);
+    return res.json(user?.friends || []);
   } catch (ex) {
     next(ex);
   }
@@ -102,9 +102,9 @@ module.exports.getPendingRequests = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).populate(
       "receivedRequests",
-      "username email avatarImage _id"
+      "username email avatarImage isAvatarImageSet _id"
     );
-    return res.json(user.receivedRequests);
+    return res.json(user?.receivedRequests || []);
   } catch (ex) {
     next(ex);
   }
@@ -115,18 +115,23 @@ module.exports.getExploreUsers = async (req, res, next) => {
     const userId = req.user.id;
     const user = await User.findById(userId);
 
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
     // Exclude self, already friends, sent requests, and received requests
     const excludedIds = [
       userId,
-      ...user.friends,
-      ...user.sentRequests,
-      ...user.receivedRequests,
+      ...(user.friends || []),
+      ...(user.sentRequests || []),
+      ...(user.receivedRequests || []),
     ];
 
     const users = await User.find({ _id: { $nin: excludedIds } }).select([
       "email",
       "username",
       "avatarImage",
+      "isAvatarImageSet",
       "_id",
     ]);
 
