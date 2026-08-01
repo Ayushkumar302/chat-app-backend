@@ -9,7 +9,18 @@ const app = express();
 const socket = require("socket.io");
 require("dotenv").config();
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const allowedOrigins = ["http://localhost:3000", "https://whizchat-app.vercel.app"];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(cookieParser());
 app.use(express.json());
 
@@ -34,7 +45,7 @@ const server = app.listen(process.env.PORT, () =>
 );
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
   },
 });
