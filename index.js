@@ -47,7 +47,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/friends", friendRoutes);
 
-const server = app.listen(process.env.PORT, () =>
+app.get("/", (req, res) => {
+  res.send("Welcome to WhizChat Backend API!");
+});
+
+const server = app.listen(process.env.PORT || 5000, () =>
   console.log(`Server started on ${process.env.PORT}`)
 );
 const io = socket(server, {
